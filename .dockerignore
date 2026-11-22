@@ -1,0 +1,31 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.venv/
+venv/
+venv-embeddings/
+venv_test/
+ENV/
+env/
+
+# Version Control
+.git/
+.gitignore
+
+# Environment & Secrets
+.env
+*.env
+.env*
+
+# IDE & OS configuration files
+.vscode/
+.idea/
+.DS_Store
+
+# Local Testing / Logs
+.pytest_cache/
+*.log

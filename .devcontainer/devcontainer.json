@@ -1,0 +1,6 @@
+{
+    "name": "brown-rice-capital-assignment",
+    "dockerComposeFile": "../compose.yaml",
+    "service": "brc-backend",
+    "workspaceFolder": "/app"
+  }
