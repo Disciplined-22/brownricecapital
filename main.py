@@ -2,12 +2,14 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from routers import trades
+from routers import prices
 
 load_dotenv()
 
 app = FastAPI()
 
 app.include_router(trades.router)
+app.include_router(prices.router)
 
 
 @app.get("/")
@@ -26,11 +28,6 @@ def get_positions():
 @app.get("/positions/{symbol}")
 def get_position(symbol: str):
     return {"message": f"Position for {symbol}"}
-
-
-@app.post("/prices")
-def set_price():
-    return {"message": "Price updated"}
 
 
 @app.get("/pnl")
