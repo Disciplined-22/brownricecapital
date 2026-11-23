@@ -12,8 +12,8 @@ WORKDIR /app
 
 
 # 5. Install Python dependencies first (leveraging Docker layer caching)
-# COPY requirements.txt .
-# RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # 6. Copy the rest of the application code
 COPY . .

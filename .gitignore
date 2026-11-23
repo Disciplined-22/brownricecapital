@@ -75,3 +75,6 @@ dist/
 dump_files/
 
 .kilo/
+
+compose.yaml
+.devcontainer/

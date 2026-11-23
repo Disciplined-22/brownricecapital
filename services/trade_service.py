@@ -1,9 +1,26 @@
 from decimal import Decimal
+import json
+import os
+import sys
+
 from fastapi import HTTPException
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from database import SessionLocal
 import services.position_service as position_service
+
+
+# ---------------------------------------------------------------------------
+# Path setup (matches workers/polling.py)
+# ---------------------------------------------------------------------------
+APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if APP_DIR not in sys.path:
+    sys.path.insert(0, APP_DIR)
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+TRADES_FILE = os.getenv("TRADES_FILE", "trades.json")
 
 
 def _to_decimal(value) -> Decimal:
@@ -125,3 +142,37 @@ def ingest_trade(trade_data=None):
         raise
     finally:
         db.close()
+
+
+def ingest_trades_from_file(path: str = TRADES_FILE):
+    """Load every trade from a JSON file and ingest each one via ingest_trade().
+
+    Returns a list of per-trade result dicts so the caller can report success,
+    duplicate, and error counts without aborting the whole batch on a single bad
+    row. Re-reading the same file is safe: duplicates are rejected at the
+    database level via ON CONFLICT (venue, trade_id) DO NOTHING.
+    """
+    with open(path, "r") as f:
+        trades = json.load(f)
+
+    results = []
+    for trade in trades:
+        try:
+            result = ingest_trade(trade)
+            results.append(
+                {
+                    "trade_id": trade.get("trade_id"),
+                    "status": result.get("status"),
+                    "message": result.get("message"),
+                }
+            )
+        except Exception as exc:
+            results.append(
+                {
+                    "trade_id": trade.get("trade_id"),
+                    "status": "error",
+                    "message": str(exc),
+                }
+            )
+
+    return results

@@ -16,10 +16,11 @@ env/
 .git/
 .gitignore
 
+# later uncomment in production but for test its fine
 # Environment & Secrets
-.env
-*.env
-.env*
+# .env
+# *.env
+# .env*
 
 # IDE & OS configuration files
 .vscode/
