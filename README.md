@@ -16,13 +16,15 @@ DATABASE_URL=postgresql+psycopg2://user:password@host:port/dbname
 docker-compose -f docker-compose.yml up --build
 ```
 
-3. Run the assessment test:
+3. Run the SQL queries in `db/init.sql` in your IDE (Supabase Postgres SQL editor) to create the `trades`, `positions_table`, and `prices_table` tables. (important)
+
+4. Run the assessment test:
 
 ```
 python test_scripts_2.py
 ```
 
-4. Optionally run the reconciliation test:
+5. Optionally run the reconciliation test:
 
 ```
 python test_reconciliation.py
@@ -40,3 +42,20 @@ python test_reconciliation.py
 - `test_reconciliation.py` — reconciliation
 - `test_scripts_2.py` — assessment test case and for intial run.
 - `test_scripts_one.py` — not used (additional lines)
+
+
+## APIs
+
+| Route | Method | Functionality | Returns |
+|-------|--------|---------------|---------|
+| `/trades` | POST | Pushes a single trade into PostgreSQL | Trade ingestion status (success/duplicate) |
+| `/trades/load` | POST | Batch loads trades from `trades.json` into PostgreSQL | Batch summary: success, duplicate, error counts and per-trade results |
+| `/prices` | POST | Sets the latest price for a symbol | Updated status with symbol and latest price |
+| `/pnl/{symbol}` | GET | Calculates PnL for a symbol | Realized PnL, unrealized PnL, total PnL |
+| `/reconciliation` | POST | Calculates reconciliation report against source of truth | Missing or mismatched trades report |
+
+## Notes
+
+- Reconciliation uses JSON format (`trades_reconcile.json` as source of truth vs `trades.json`) for faster implementation, instead of CSV
+- Cost-basis method: Average cost (stated in `DESIGN.md`).
+
