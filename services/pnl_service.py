@@ -14,11 +14,11 @@ def get_pnl_for_symbol(db: Session, symbol: str):
                     THEN p.net_quantity * (pr.latest_price - p.average_cost)
                     ELSE NULL
                 END AS unrealized_pnl,
+                p.realized_pnl +
                 CASE
                     WHEN pr.latest_price IS NOT NULL
-                    THEN p.realized_pnl +
-                         (p.net_quantity * (pr.latest_price - p.average_cost))
-                    ELSE NULL
+                    THEN p.net_quantity * (pr.latest_price - p.average_cost)
+                    ELSE 0
                 END AS total_pnl
             FROM positions_table p
             LEFT JOIN prices_table pr ON p.symbol = pr.symbol
@@ -33,6 +33,6 @@ def get_pnl_for_symbol(db: Session, symbol: str):
     return {
         "symbol": row[0],
         "realized_pnl": Decimal(str(row[1])) if row[1] is not None else Decimal("0"),
-        "unrealized_pnl": Decimal(str(row[2])) if row[2] is not None else None,
-        "total_pnl": Decimal(str(row[3])) if row[3] is not None else None,
+        "unrealized_pnl": Decimal(str(row[2])) if row[2] is not None else Decimal("0"), 
+        "total_pnl": Decimal(str(row[3])) if row[3] is not None else Decimal("0"),
     }
